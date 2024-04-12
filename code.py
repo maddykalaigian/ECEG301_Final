@@ -5,8 +5,8 @@ import storage
 import os
 import digitalio
 import adafruit_sdcard
-#import adafruit_adxl34x
-#import adafruit_adxl34x
+import adafruit_adxl34x
+import adafruit_adxl34x
 from analogio import AnalogIn
 
 
