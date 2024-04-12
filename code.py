@@ -1,14 +1,21 @@
-# SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries
-# SPDX-License-Identifier: MIT
-
 import time
 import board
+import busio
+import storage
+import os
+import digitalio
+import adafruit_sdcard
+#import adafruit_adxl34x
+#import adafruit_adxl34x
 from analogio import AnalogIn
-import adafruit_adxl34x
 
+
+"""
+ACCELEROMETER
+"""
 def get_voltage(pin):
     return (pin.value * 3.3) / 65536
-    
+
 def volt_to_NTU(v):
     return -1120.4*v**2 + 5742.3*v - 4352.9
 
@@ -31,3 +38,40 @@ while True:
     print("Motion detected: %s" % accelerometer.events["motion"])
     print(str(get_voltage(analog_in)) + " V")
     time.sleep(0.5)
+
+
+
+
+"""
+SD CARD
+"""
+SD_CS = board.SD_CS  # setup for M0 Adalogger; change as needed
+
+# Connect to the card and mount the filesystem.
+spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
+cs = digitalio.DigitalInOut(SD_CS)
+sdcard = adafruit_sdcard.SDCard(spi, cs)
+vfs = storage.VfsFat(sdcard)
+storage.mount(vfs, "/sd")
+"""
+# Create/open a file and write a line of text
+with open("/sd/test.txt", "w") as f:
+    f.write("Hello world!\r\n")
+"""
+"""
+# Open a file and read a line from it
+with open("/sd/test.txt", "r") as f:
+    print("Read line from file:")
+    print(f.readline())
+"""
+# read and print all lines from a file:
+with open("/sd/test.txt", "r") as f:
+    print("Printing lines in file:")
+    line = f.readline()
+    while line != '':
+        print(line)
+        line = f.readline()
+
+
+
+
