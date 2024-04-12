@@ -55,8 +55,14 @@ vfs = storage.VfsFat(sdcard)
 storage.mount(vfs, "/sd")
 """
 # Create/open a file and write a line of text
+# "w" erases existing file and starts at the top
 with open("/sd/test.txt", "w") as f:
     f.write("Hello world!\r\n")
+"""
+"""
+# Create/open a file and append ("a") text
+with open("/sd/test.txt", "a") as f:
+    f.write("This is another line!\r\n")
 """
 """
 # Open a file and read a line from it
