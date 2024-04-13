@@ -45,7 +45,7 @@ while True:
 """
 SD CARD
 """
-SD_CS = board.SD_CS  # setup for M0 Adalogger; change as needed
+SD_CS = board.SD_CS  # setup for M0 Adalogger
 
 # Connect to the card and mount the filesystem.
 spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
@@ -53,23 +53,23 @@ cs = digitalio.DigitalInOut(SD_CS)
 sdcard = adafruit_sdcard.SDCard(spi, cs)
 vfs = storage.VfsFat(sdcard)
 storage.mount(vfs, "/sd")
+
+
 """
-# Create/open a file and write a line of text
+# create/open a file and write a line of text
 # "w" erases existing file and starts at the top
 with open("/sd/test.txt", "w") as f:
     f.write("Hello world!\r\n")
-"""
-"""
-# Create/open a file and append ("a") text
+    
+# create/open a file and append ("a") text
 with open("/sd/test.txt", "a") as f:
     f.write("This is another line!\r\n")
-"""
-"""
-# Open a file and read a line from it
+
+# open a file and read a line from it
 with open("/sd/test.txt", "r") as f:
     print("Read line from file:")
     print(f.readline())
-"""
+
 # read and print all lines from a file:
 with open("/sd/test.txt", "r") as f:
     print("Printing lines in file:")
@@ -78,6 +78,28 @@ with open("/sd/test.txt", "r") as f:
         print(line)
         line = f.readline()
 
+# examples for our sensors
+# just use the above loop to read all lines
+# and change "test.txt" to desired text file  
+    
+print("Logging turbidity to sd card")
+with open("/sd/turbidity.txt", "a") as f:
+    f.write("turbidity data")
+time.sleep(1)
 
+print("Logging flow rate to filesystem")
+with open("/sd/flow.txt", "a") as f:
+    f.write("flow rate data")
+time.sleep(1)
 
+print("Logging accelerometer to filesystem")
+with open("/sd/accelerometer.txt", "a") as f:
+    f.write("accelerometer data")
+time.sleep(1)
 
+print("Logging GPS to filesystem")
+with open("/sd/gps.txt", "a") as f:
+    f.write("gps data")
+time.sleep(1)
+
+"""
