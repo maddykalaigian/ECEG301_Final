@@ -110,7 +110,7 @@ while True:
     turbidity_value = get_turbidity_value()
     flow_rate_value = get_flow_rate_value()
     
-    with open("/sd/sensor_data.txt", "a") as f:
+    with open("/sd/sensor_data.csv", "a") as f:
         f.write(f"{accelerometer_value}, {gps_timestamp}, {turbidity_value}, {flow_rate_value}\n")
     print(f"Logged data to sensor_data.txt")
     time.sleep(1)
