@@ -105,6 +105,7 @@ time.sleep(1)
 # edit while condition for accelerometer ping?
 # csv text file example (maybe better for NGO use?)
 while True:
+    # just random examples
     accelerometer_value = get_accelerometer_data()
     gps_timestamp = get_gps_timestamp()
     turbidity_value = get_turbidity_value()
