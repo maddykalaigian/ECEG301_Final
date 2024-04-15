@@ -112,7 +112,7 @@ while True:
     
     with open("/sd/sensor_data.csv", "a") as f:
         f.write(f"{accelerometer_value}, {gps_timestamp}, {turbidity_value}, {flow_rate_value}\n")
-    print(f"Logged data to sensor_data.txt")
+    print(f"Logged data to sensor_data.csv")
     time.sleep(1)
 
 """
