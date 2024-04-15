@@ -102,4 +102,17 @@ with open("/sd/gps.txt", "a") as f:
     f.write("gps data")
 time.sleep(1)
 
+# edit while condition for accelerometer ping?
+# csv text file example (maybe better for NGO use?)
+while True:
+    accelerometer_value = get_accelerometer_data()
+    gps_timestamp = get_gps_timestamp()
+    turbidity_value = get_turbidity_value()
+    flow_rate_value = get_flow_rate_value()
+    
+    with open("/sd/sensor_data.txt", "a") as f:
+        f.write(f"{accelerometer_value}, {gps_timestamp}, {turbidity_value}, {flow_rate_value}\n")
+    print(f"Logged data to sensor_data.txt")
+    time.sleep(1)
+
 """
