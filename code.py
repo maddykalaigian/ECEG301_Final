@@ -5,7 +5,8 @@ import storage
 import os
 import digitalio
 import adafruit_sdcard
-import adafruit_adxl34ximport adafruit_character_lcd.character_lcd_i2c as character_lcd
+import adafruit_adxl34x
+import adafruit_character_lcd.character_lcd_i2c as character_lcd
 from analogio import AnalogIn
 
 
