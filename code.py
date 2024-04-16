@@ -5,7 +5,7 @@ import storage
 import os
 import digitalio
 import adafruit_sdcard
-import adafruit_adxl34x
+import adafruit_adxl34ximport adafruit_character_lcd.character_lcd_i2c as character_lcd
 from analogio import AnalogIn
 
 
@@ -38,7 +38,19 @@ while True:
     print(str(get_voltage(analog_in)) + " V")
     time.sleep(0.5)
 
+"""
+LCD SCREEN
+"""
 
+cols = 16
+rows = 2
+lcd = character_lcd.Character_LCD_I2C(I2C, cols, rows)
+lcd.cursor = False
+
+# to write to the screen
+lcd.message = "Hello there \nHow are you?"
+# to clear the screen
+lcd.clear()
 
 
 """
