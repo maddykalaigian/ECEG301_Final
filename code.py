@@ -44,7 +44,7 @@ LCD SCREEN
 
 cols = 16
 rows = 2
-lcd = character_lcd.Character_LCD_I2C(I2C, cols, rows)
+lcd = character_lcd.Character_LCD_I2C(i2c, cols, rows)
 lcd.cursor = False
 
 # to write to the screen
