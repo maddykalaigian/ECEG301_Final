@@ -1,28 +1,27 @@
 import time
 import board
 import busio
-import storage
-import os
-import digitalio
-import adafruit_sdcard
-import adafruit_adxl34x
-import adafruit_character_lcd.character_lcd_i2c as character_lcd
 from analogio import AnalogIn
+import adafruit_adxl34x
+import adafruit_gps
+import adafruit_sdcard
+import storage
+import digitalio
 
+import adafruit_character_lcd.character_lcd_i2c as character_lcd
+from digitalio import DigitalInOut, Direction, Pull
 
-"""
-ACCELEROMETER
-"""
 def get_voltage(pin):
     return (pin.value * 3.3) / 65536
 
 def volt_to_NTU(v):
-    return -1120.4*v**2 + 5742.3*v - 4352.9
+    pass
 
 i2c = board.I2C()  # uses board.SCL and board.SDA
+uart = busio.UART(board.TX, board.RX, baudrate=9600, timeout=10)
 # i2c = board.STEMMA_I2C()  # For using the built-in STEMMA QT connector on a microcontroller
 
-# Turidity
+# Turbidity
 analog_in = AnalogIn(board.A1)
 
 # For ADXL343
@@ -34,98 +33,98 @@ accelerometer.enable_motion_detection()
 # alternatively you can specify the threshold when you enable motion detection for more control:
 # accelerometer.enable_motion_detection(threshold=10)
 
-while True:
-    print("Motion detected: %s" % accelerometer.events["motion"])
-    print(str(get_voltage(analog_in)) + " V")
-    time.sleep(0.5)
+gps = adafruit_gps.GPS(uart, debug=False)
+gps.send_command(b'PMTK314,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0')
+gps.send_command(b"PMTK220,1000")
 
-"""
-LCD SCREEN
-"""
-
+#For LCD Screen
+#THIS DOES NOT WORK YET, IT IS A WORK IN PROGRESS
 cols = 16
 rows = 2
-lcd = character_lcd.Character_LCD_I2C(i2c, cols, rows)
-lcd.cursor = False
+lcd = character_lcd.Character_LCD_I2C(i2c,cols,rows)
+lcd.backlight = True
+lcd.message = "Hello World"
 
-# to write to the screen
-lcd.message = "Hello there \nHow are you?"
-# to clear the screen
-lcd.clear()
+flow = DigitalInOut(board.D5)
+flow.direction = Direction.INPUT
+flow.pull = Pull.DOWN
+
+flowNow = flow.value
+flowPrev = flow.value
+edgeCounter = 0
+
+timeNow = time.monotonic()
+timePrev = timeNow
 
 
-"""
-SD CARD
-"""
-SD_CS = board.SD_CS  # setup for M0 Adalogger
-
-# Connect to the card and mount the filesystem.
 spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
-cs = digitalio.DigitalInOut(SD_CS)
+cs = digitalio.DigitalInOut(board.D10)
+
 sdcard = adafruit_sdcard.SDCard(spi, cs)
 vfs = storage.VfsFat(sdcard)
+
 storage.mount(vfs, "/sd")
 
 
-"""
-# create/open a file and write a line of text
-# "w" erases existing file and starts at the top
-with open("/sd/test.txt", "w") as f:
-    f.write("Hello world!\r\n")
-    
-# create/open a file and append ("a") text
-with open("/sd/test.txt", "a") as f:
-    f.write("This is another line!\r\n")
 
-# open a file and read a line from it
-with open("/sd/test.txt", "r") as f:
-    print("Read line from file:")
-    print(f.readline())
-
-# read and print all lines from a file:
-with open("/sd/test.txt", "r") as f:
-    print("Printing lines in file:")
-    line = f.readline()
-    while line != '':
-        print(line)
-        line = f.readline()
-
-# examples for our sensors
-# just use the above loop to read all lines
-# and change "test.txt" to desired text file  
-    
-print("Logging turbidity to sd card")
-with open("/sd/turbidity.txt", "a") as f:
-    f.write("turbidity data")
-time.sleep(1)
-
-print("Logging flow rate to filesystem")
-with open("/sd/flow.txt", "a") as f:
-    f.write("flow rate data")
-time.sleep(1)
-
-print("Logging accelerometer to filesystem")
-with open("/sd/accelerometer.txt", "a") as f:
-    f.write("accelerometer data")
-time.sleep(1)
-
-print("Logging GPS to filesystem")
-with open("/sd/gps.txt", "a") as f:
-    f.write("gps data")
-time.sleep(1)
-
-# edit while condition for accelerometer interrupt
-# csv text file example (maybe better for NGO use?)
 while True:
-    # just random examples
-    accelerometer_value = get_accelerometer_data()
-    gps_timestamp = get_gps_timestamp()
-    turbidity_value = get_turbidity_value()
-    flow_rate_value = get_flow_rate_value()
-    
-    with open("/sd/sensor_data.csv", "a") as f:
-        f.write(f"{accelerometer_value}, {gps_timestamp}, {turbidity_value}, {flow_rate_value}\n")
-    print(f"Logged data to sensor_data.csv")
-    time.sleep(1)
+    # gps.update()
 
-"""
+#     if not gps.timestamp_utc:
+#         print("No time data from GPS yet")
+
+
+#     if not gps.has_fix:
+#         print("Waiting for fix...")
+#         continue
+
+#     print("{}/{}/{} {:02}:{:02}:{:02}".format(
+#             gps.timestamp_utc.tm_mon,
+#             gps.timestamp_utc.tm_mday,
+#             gps.timestamp_utc.tm_year,
+#             gps.timestamp_utc.tm_hour,
+#             gps.timestamp_utc.tm_min,
+#             gps.timestamp_utc.tm_sec,
+#         ))
+
+#     time_gps = "{}/{}/{} {:02}:{:02}:{:02}".format(
+#             gps.timestamp_utc.tm_mon,
+#             gps.timestamp_utc.tm_mday,
+#             gps.timestamp_utc.tm_year,
+#             gps.timestamp_utc.tm_hour,
+#             gps.timestamp_utc.tm_min,
+#             gps.timestamp_utc.tm_sec,
+#         )
+
+#     print(time_gps)
+
+#     latitude = "{0:.6f}".format(gps.latitude)
+#     longitude = "{0:.6f}".format(gps.longitude)
+
+#     with open("/sd/test.csv", "a") as f:
+#         f.write(time_gps+","+latitude+","+longitude+"\r\n")
+
+#     print("done!")
+#     time.sleep(5)
+
+
+#     with open("/sd/test.csv", "r") as f:
+#         print("Read line from file:")
+#         print(f.readline())
+
+    timeNow = time.monotonic()
+    flowNow = flow.value
+
+    if(flowNow != flowPrev and flowNow):
+        edgeCounter += 1
+
+    if((timeNow - timePrev) > 1.0):
+        print("Flow rate (pulses):"+ str(edgeCounter))
+        print("Motion detected: %s" % accelerometer.events["motion"])
+        print(str(get_voltage(analog_in)) + " V")
+        edgeCounter = 0
+        timePrev = timeNow
+
+    flowPrev = flowNow
+
+
